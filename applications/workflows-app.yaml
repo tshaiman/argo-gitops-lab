@@ -8,7 +8,7 @@ spec:
 
   source:
     repoURL: https://github.com/tshaiman/argo-gitops-lab.git
-    targetRevision: main
+    targetRevision: master
     path: workflows
 
   destination:
