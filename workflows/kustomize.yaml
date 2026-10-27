@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- pipeline.yaml
+- common-templates.yaml
+- python-workflow.yaml
+- rbac.yaml
+
+configMapGenerator:
+- name: python-scripts
+  namespace: argo
+  files:
+  - scripts/hello.py
+
+generatorOptions:
+  disableNameSuffixHash: true

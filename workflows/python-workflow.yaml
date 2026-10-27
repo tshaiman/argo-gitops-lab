@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: python-pipeline
+  namespace: argo
+spec:
+  entrypoint: main
+  serviceAccountName: workflow-runner
+
+  volumes:
+  - name: scripts
+    configMap:
+      name: python-scripts
+
+  templates:
+  - name: main
+    container:
+      image: python:3.12-slim
+      command: [ python, /scripts/hello.py ]
+      env:
+      - name: NAME
+        value: "GitOps Lab"
+      volumeMounts:
+      - name: scripts
+        mountPath: /scripts
+        readOnly: true
