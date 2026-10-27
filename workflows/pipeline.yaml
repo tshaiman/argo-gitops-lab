@@ -28,7 +28,7 @@ spec:
             value: "Preparing environment"
 
       - name: build
-        dependencies: [ prepare ]
+        depends: "prepare.Succeeded"
         templateRef:
           name: common-tasks
           template: run-task
@@ -38,7 +38,7 @@ spec:
             value: "Building application"
 
       - name: test
-        dependencies: [ prepare ]
+        depends: "prepare.Succeeded"
         templateRef:
           name: common-tasks
           template: run-task
