@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: demo-pipeline
+  namespace: argo
+spec:
+  entrypoint: main
+  serviceAccountName: workflow-runner
+
+  templates:
+  - name: main
+    steps:
+    - - name: prepare
+        template: prepare
+    - - name: execute
+        template: execute
+    - - name: validate
+        template: validate
+
+  - name: prepare
+    container:
+      image: alpine:3.20
+      command: [ sh, -c ]
+      args: [ "echo 'Preparing environment'" ]
+
+  - name: execute
+    container:
+      image: alpine:3.20
+      command: [ sh, -c ]
+      args: [ "echo 'Executing pipeline' && sleep 5" ]
+
+  - name: validate
+    container:
+      image: alpine:3.20
+      command: [ sh, -c ]
+      args: [ "echo 'Pipeline completed successfully'" ]

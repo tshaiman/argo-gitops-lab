@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workflow-pipelines
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/tshaiman/argo-gitops-lab.git
+    targetRevision: main
+    path: workflows
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
