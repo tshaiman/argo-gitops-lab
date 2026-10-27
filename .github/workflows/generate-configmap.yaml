@@ -1,0 +1,31 @@
+name: Generate ConfigMap File List
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'workflows/scripts/**'
+    - 'scripts/generate-kustomization.py'
+    - '.github/workflows/generate-configmap.yaml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Generate file list
+      run: python scripts/generate-kustomization.py
+
+    - name: Commit changes
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add workflows/kustomization.yaml
+        if ! git diff --cached --quiet; then
+          git commit -m "ci: update ConfigMap file list"
+          git push
+        fi
