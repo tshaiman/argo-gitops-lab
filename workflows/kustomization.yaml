@@ -11,7 +11,9 @@ configMapGenerator:
 - name: python-scripts
   namespace: argo
   files:
-  - scripts/
+    - scripts/hello.py
+    - scripts/second.py
+    - scripts/validate.py
 
 generatorOptions:
   disableNameSuffixHash: true
