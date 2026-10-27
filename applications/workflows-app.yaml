@@ -10,7 +10,9 @@ spec:
     repoURL: https://github.com/tshaiman/argo-gitops-lab.git
     targetRevision: master
     path: workflows
-    kustomize: {}
+    kustomize:
+      commonAnnotations:
+        gitops-managed: "true"
 
   destination:
     server: https://kubernetes.default.svc
