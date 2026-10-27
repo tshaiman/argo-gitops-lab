@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: common-tasks
+  namespace: argo
+spec:
+  templates:
+  - name: run-task
+    inputs:
+      parameters:
+      - name: message
+      - name: fail
+        value: "false"
+
+    retryStrategy:
+      limit: 2
+      retryPolicy: OnFailure
+      backoff:
+        duration: "2s"
+        factor: 2
+        maxDuration: "10s"
+
+    container:
+      image: alpine:3.20
+      command: [ sh, -c ]
+      args:
+      - |
+        echo "{{inputs.parameters.message}}"
+        sleep 5
+
+        if [ "{{inputs.parameters.fail}}" = "true" ]; then
+          echo "Simulated failure!"
+          exit 1
+        fi
+
+        echo "Task completed successfully"

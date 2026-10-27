@@ -6,31 +6,65 @@ metadata:
 spec:
   entrypoint: main
   serviceAccountName: workflow-runner
+  onExit: exit-handler
+
+  arguments:
+    parameters:
+    - name: fail-tests
+      value: "false"
 
   templates:
   - name: main
-    steps:
-    - - name: prepare
-        template: prepare
-    - - name: execute
-        template: execute
-    - - name: validate
-        template: validate
+    dag:
+      failFast: false
+      tasks:
+      - name: prepare
+        templateRef:
+          name: common-tasks
+          template: run-task
+        arguments:
+          parameters:
+          - name: message
+            value: "Preparing environment"
 
-  - name: prepare
+      - name: build
+        dependencies: [ prepare ]
+        templateRef:
+          name: common-tasks
+          template: run-task
+        arguments:
+          parameters:
+          - name: message
+            value: "Building application"
+
+      - name: test
+        dependencies: [ prepare ]
+        templateRef:
+          name: common-tasks
+          template: run-task
+        arguments:
+          parameters:
+          - name: message
+            value: "Running tests"
+          - name: fail
+            value: "{{workflow.parameters.fail-tests}}"
+
+      - name: validate
+        depends: "build.Succeeded && test.Succeeded"
+        templateRef:
+          name: common-tasks
+          template: run-task
+        arguments:
+          parameters:
+          - name: message
+            value: "Validating results"
+
+  - name: exit-handler
     container:
       image: alpine:3.20
       command: [ sh, -c ]
-      args: [ "echo 'Preparing environment'" ]
-
-  - name: execute
-    container:
-      image: alpine:3.20
-      command: [ sh, -c ]
-      args: [ "echo 'Executing pipeline' && sleep 5" ]
-
-  - name: validate
-    container:
-      image: alpine:3.20
-      command: [ sh, -c ]
-      args: [ "echo 'Pipeline completed successfully'" ]
+      args:
+      - |
+        echo "Workflow: {{workflow.name}}"
+        echo "Final status: {{workflow.status}}"
+        echo "Cleanup / notification completed"
