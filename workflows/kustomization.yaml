@@ -11,7 +11,7 @@ configMapGenerator:
 - name: python-scripts
   namespace: argo
   files:
-  - scripts/hello.py
+  - scripts/
 
 generatorOptions:
   disableNameSuffixHash: true
